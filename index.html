@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mochila con Memoria</title>
+    <title>Mi Cartera Organizada</title>
     <style>
         /* CSS: Estilos y colores (Modo oscuro Notion #191919) */
         * { box-sizing: border-box; }
@@ -21,10 +21,10 @@
             overflow-x: hidden;
         }
 
-        #home-view { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1000px; }
+        #home-view { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 1000px; margin-top: 5vh; }
 
         #gallery-view {
-            display: none; flex-direction: column; width: 100%; max-width: 900px;
+            display: none; flex-direction: column; width: 100%; max-width: 1000px;
             background-color: #252525; border-radius: 12px; padding: 30px;
             border: 1px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             animation: fadeIn 0.3s ease;
@@ -32,20 +32,20 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 20px; }
+        .header { text-align: center; margin-bottom: 40px; }
         .header h1 { margin: 0 0 5px 0; font-size: 24px; }
         .header p { color: #9ba1a6; margin: 0; font-size: 14px; }
 
-        .main-container { display: flex; flex-wrap: wrap; gap: 50px; align-items: center; justify-content: center; width: 100%; }
+        .main-container { display: flex; justify-content: center; width: 100%; }
 
-        /* MOCHILA */
+        /* CARTERA */
         .backpack-section { display: flex; flex-direction: column; align-items: center; }
         .backpack-dropzone {
             width: 350px; height: 450px; display: flex; align-items: center; justify-content: center;
             position: relative; transition: all 0.3s ease; cursor: pointer;
         }
         .backpack-dropzone::after {
-            content: "Abrir mochila"; position: absolute; bottom: 20px; background: rgba(0,0,0,0.7);
+            content: "Abrir cartera"; position: absolute; bottom: 20px; background: rgba(0,0,0,0.7);
             padding: 8px 15px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none;
         }
         .backpack-dropzone:hover::after { opacity: 1; }
@@ -53,117 +53,160 @@
             width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s ease, filter 0.3s ease;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); pointer-events: none;
         }
-        .backpack-dropzone.drag-over .backpack-image, .backpack-dropzone:hover .backpack-image {
+        .backpack-dropzone:hover .backpack-image {
             transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
         }
 
-        /* ROPA */
-        .wardrobe {
-            background-color: #252525; border: 1px solid #333; border-radius: 12px; padding: 25px;
-            width: 250px; display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .clothing-item { font-size: 50px; cursor: grab; transition: transform 0.2s, opacity 0.2s; user-select: none; background: #333; border-radius: 10px; padding: 10px; }
-        .clothing-item:active { cursor: grabbing; }
-        .clothing-item:hover { transform: scale(1.15) rotate(5deg); background: #444; }
-        .clothing-item.hidden { opacity: 0; transform: scale(0); pointer-events: none; position: absolute; }
-
-        /* CONTROLES */
-        .controls { margin-top: 25px; text-align: center; background: #252525; padding: 15px 25px; border-radius: 10px; border: 1px solid #333; }
-        .controls p { margin: 0 0 10px 0; font-weight: 600; }
+        /* BOTONES */
         .btn { background-color: #444; color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: background 0.2s; display: inline-flex; align-items: center; gap: 8px; }
         .btn:hover { background-color: #666; }
         .btn-primary { background-color: #2eaadc; }
         .btn-primary:hover { background-color: #1b8ebc; }
 
-        /* GALERIA */
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3e3e3e; padding-bottom: 20px; margin-bottom: 20px; }
-        .gallery-header h2 { margin: 0; font-size: 22px; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px; min-height: 200px; }
-        .empty-state { grid-column: 1 / -1; text-align: center; color: #777; padding: 40px; font-size: 16px; border: 2px dashed #333; border-radius: 10px; }
-        .gallery-item { width: 100%; height: 150px; object-fit: cover; border-radius: 8px; border: 1px solid #444; transition: transform 0.2s; cursor: pointer; }
-        .gallery-item:hover { transform: scale(1.05); border-color: #ff4a4a; }
+        /* GALERIA & CATEGORIAS */
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3e3e3e; padding-bottom: 20px; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; }
+        .gallery-header h2 { margin: 0; font-size: 22px; width: 100%; text-align: center; }
+        .gallery-header-controls { display: flex; justify-content: space-between; width: 100%; align-items: center; }
+        
+        .category-section { margin-bottom: 30px; background: #1e1e1e; padding: 20px; border-radius: 10px; border: 1px solid #333; }
+        .category-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px dashed #444; padding-bottom: 10px; }
+        .category-header h3 { margin: 0; font-size: 18px; color: #e0e0e0; display: flex; align-items: center; gap: 8px; }
+        
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; min-height: 100px; }
+        .empty-state { grid-column: 1 / -1; text-align: center; color: #777; padding: 20px; font-size: 14px; border: 2px dashed #333; border-radius: 8px; }
+        
+        .gallery-item-container { position: relative; width: 100%; padding-bottom: 100%; /* Aspect ratio 1:1 */ border-radius: 8px; border: 1px solid #444; transition: transform 0.2s; overflow: hidden; background: #111; }
+        .gallery-item-container:hover { transform: scale(1.05); border-color: #ff4a4a; z-index: 2;}
+        .gallery-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        
         input[type="file"] { display: none; }
+        
+        .upload-controls { display: flex; gap: 10px; align-items: center; }
+        .category-select { background: #333; color: white; border: 1px solid #555; padding: 9px; border-radius: 6px; font-size: 14px; outline: none; }
+        .category-select:focus { border-color: #2eaadc; }
     </style>
 </head>
 <body>
 
+    <!-- ================= VISTA 1: PRINCIPAL ================= -->
     <div id="home-view">
         <div class="header">
-            <h1>Mi Equipaje (Con Memoria)</h1>
-            <p>Arrastra ropa para guardarla o <b>haz clic en la mochila</b> para ver tu galería de fotos.</p>
+            <h1>Mi Cartera</h1>
+            <p><b>Haz clic en la cartera</b> para organizar el interior.</p>
         </div>
 
         <div class="main-container">
             <div class="backpack-section">
-                <!-- Se actualizó la imagen acá abajo -->
+                <!-- Puedes cambiar el src de la imagen por el de una cartera si prefieres -->
                 <div class="backpack-dropzone" id="dropzone">
-                    <img src="https://i.postimg.cc/1R8QVj4y/1003317623233949654-removebg-preview.png" alt="Mochila" class="backpack-image" id="backpack-img">
+                    <img src="https://i.postimg.cc/1R8QVj4y/1003317623233949654-removebg-preview.png" alt="Cartera" class="backpack-image" id="backpack-img">
                 </div>
-                
-                <div class="controls">
-                    <p>Prendas rápidas: <span id="counter">0</span> / 6</p>
-                    <button class="btn" id="reset-btn">Sacar ropa rápida</button>
-                </div>
-            </div>
-
-            <div class="wardrobe">
-                <div class="clothing-item" draggable="true" id="item-1">👕</div>
-                <div class="clothing-item" draggable="true" id="item-2">👖</div>
-                <div class="clothing-item" draggable="true" id="item-3">🧥</div>
-                <div class="clothing-item" draggable="true" id="item-4">🧦</div>
-                <div class="clothing-item" draggable="true" id="item-5">👟</div>
-                <div class="clothing-item" draggable="true" id="item-6">🧢</div>
             </div>
         </div>
     </div>
 
+    <!-- ================= VISTA 2: INTERIOR (CATEGORÍAS) ================= -->
     <div id="gallery-view">
         <div class="gallery-header">
-            <button class="btn" id="btn-back">⬅ Volver</button>
-            <h2>Interior de la Mochila</h2>
-            <label for="file-upload" class="btn btn-primary" style="cursor: pointer;">📷 Guardar Imágenes</label>
-            <input type="file" id="file-upload" multiple accept="image/*">
+            <h2>Interior de la Cartera</h2>
+            <div class="gallery-header-controls">
+                <button class="btn" id="btn-back">⬅ Volver afuera</button>
+                
+                <div class="upload-controls">
+                    <!-- ACÁ SE ELIGE LA CATEGORÍA ANTES DE SUBIR -->
+                    <select id="category-selector" class="category-select">
+                        <option value="billetera">Billetera & Docs</option>
+                        <option value="maquillaje">Maquillaje & Aseo</option>
+                        <option value="tecnologia">Tecnología</option>
+                        <option value="extras">Extras varios</option>
+                    </select>
+                    
+                    <label for="file-upload" class="btn btn-primary" style="cursor: pointer;">
+                        + Guardar aquí
+                    </label>
+                    <input type="file" id="file-upload" multiple accept="image/*">
+                </div>
+            </div>
         </div>
-        <p style="text-align: center; color: #777; font-size: 12px; margin-top: -15px; margin-bottom: 20px;">Doble clic en una imagen para eliminarla de la mochila.</p>
         
-        <div class="gallery-grid" id="gallery-grid">
-            <div class="empty-state" id="empty-state">Aún no has guardado ninguna foto en tu mochila.</div>
+        <p style="text-align: center; color: #777; font-size: 13px; margin-top: -10px; margin-bottom: 25px;">Selecciona la categoría arriba antes de subir. <b>Doble clic</b> en una imagen para eliminarla.</p>
+        
+        <!-- Categoría: Billetera -->
+        <div class="category-section" id="cat-billetera">
+            <div class="category-header">
+                <h3>💳 Billetera & Documentos</h3>
+            </div>
+            <div class="gallery-grid" id="grid-billetera">
+                <div class="empty-state" id="empty-billetera">Compartimento vacío</div>
+            </div>
         </div>
+
+        <!-- Categoría: Maquillaje -->
+        <div class="category-section" id="cat-maquillaje">
+            <div class="category-header">
+                <h3>💄 Maquillaje & Aseo</h3>
+            </div>
+            <div class="gallery-grid" id="grid-maquillaje">
+                <div class="empty-state" id="empty-maquillaje">Compartimento vacío</div>
+            </div>
+        </div>
+        
+        <!-- Categoría: Tecnología -->
+        <div class="category-section" id="cat-tecnologia">
+            <div class="category-header">
+                <h3>💻 Tecnología</h3>
+            </div>
+            <div class="gallery-grid" id="grid-tecnologia">
+                <div class="empty-state" id="empty-tecnologia">Compartimento vacío</div>
+            </div>
+        </div>
+
+        <!-- Categoría: Extras -->
+        <div class="category-section" id="cat-extras">
+            <div class="category-header">
+                <h3>✨ Extras varios</h3>
+            </div>
+            <div class="gallery-grid" id="grid-extras">
+                <div class="empty-state" id="empty-extras">Compartimento vacío</div>
+            </div>
+        </div>
+
     </div>
 
     <script>
+        // =========================================================================
+        // ⚙️ CONFIGURACIÓN IMPORTANTE PARA NOTION
+        // =========================================================================
+        const WIDGET_ID = "cartera_organizada_1"; 
+        const KEY_IMAGES = WIDGET_ID + "_images";
+        // =========================================================================
+
         const homeView = document.getElementById('home-view');
         const galleryView = document.getElementById('gallery-view');
         const dropzone = document.getElementById('dropzone');
-        const backpackImg = document.getElementById('backpack-img');
-        const clothes = document.querySelectorAll('.clothing-item');
-        const counterText = document.getElementById('counter');
-        const resetBtn = document.getElementById('reset-btn');
         const btnBack = document.getElementById('btn-back');
         const fileUpload = document.getElementById('file-upload');
-        const galleryGrid = document.getElementById('gallery-grid');
-        const emptyState = document.getElementById('empty-state');
+        const categorySelector = document.getElementById('category-selector');
 
-        // VARIABLES DE MEMORIA (LocalStorage)
-        let savedClothes = JSON.parse(localStorage.getItem('mochila_clothes')) || [];
-        let savedImages = JSON.parse(localStorage.getItem('mochila_images')) || [];
-        let packedItems = 0;
+        // Memoria para imágenes estructurada por categorías
+        let savedImages = JSON.parse(localStorage.getItem(KEY_IMAGES)) || {
+            "billetera": [],
+            "maquillaje": [],
+            "tecnologia": [],
+            "extras": []
+        };
 
         // INICIALIZAR MEMORIA AL CARGAR
         function initMemory() {
-            // Restaurar ropa
-            if (savedClothes.length > 0) {
-                packedItems = savedClothes.length;
-                counterText.innerText = packedItems;
-                clothes.forEach(item => {
-                    if (savedClothes.includes(item.id)) { item.classList.add('hidden'); }
-                });
-            }
-            
-            // Restaurar imágenes
-            if (savedImages.length > 0) {
-                emptyState.style.display = 'none';
-                savedImages.forEach(src => renderImage(src));
+            // Imágenes por categoría
+            for (const category in savedImages) {
+                const imagesArray = savedImages[category];
+                if (imagesArray && imagesArray.length > 0) {
+                    const emptyState = document.getElementById('empty-' + category);
+                    if(emptyState) emptyState.style.display = 'none';
+                    
+                    imagesArray.forEach(src => renderImage(src, category, false)); // false = no volver a guardar
+                }
             }
         }
 
@@ -171,102 +214,80 @@
         dropzone.addEventListener('click', () => { homeView.style.display = 'none'; galleryView.style.display = 'flex'; });
         btnBack.addEventListener('click', () => { galleryView.style.display = 'none'; homeView.style.display = 'flex'; });
 
-        // RENDERIZAR Y GUARDAR IMAGEN
-        function renderImage(srcBase64) {
+        // RENDERIZAR IMAGEN EN CATEGORÍA
+        function renderImage(srcBase64, category, saveToStorage = true) {
+            const grid = document.getElementById('grid-' + category);
+            if (!grid) return;
+
+            const container = document.createElement('div');
+            container.classList.add('gallery-item-container');
+            
             const imgElement = document.createElement('img');
             imgElement.src = srcBase64;
             imgElement.classList.add('gallery-item');
-            imgElement.title = "Doble clic para borrar";
+            imgElement.title = "Doble clic para borrar de " + category;
+            
+            container.appendChild(imgElement);
             
             // Función para borrar con doble clic
             imgElement.addEventListener('dblclick', () => {
-                imgElement.remove();
-                // Actualizar memoria
-                savedImages = savedImages.filter(src => src !== srcBase64);
-                localStorage.setItem('mochila_images', JSON.stringify(savedImages));
+                container.remove();
                 
-                if (savedImages.length === 0) emptyState.style.display = 'block';
+                // Actualizar memoria de esa categoría
+                savedImages[category] = savedImages[category].filter(src => src !== srcBase64);
+                localStorage.setItem(KEY_IMAGES, JSON.stringify(savedImages));
+                
+                // Volver a mostrar el mensaje de vacío si corresponde
+                if (savedImages[category].length === 0) {
+                    document.getElementById('empty-' + category).style.display = 'block';
+                }
             });
             
-            galleryGrid.appendChild(imgElement);
+            grid.appendChild(container);
+
+            if (saveToStorage) {
+                try {
+                    if (!savedImages[category]) savedImages[category] = [];
+                    
+                    savedImages[category].push(srcBase64);
+                    localStorage.setItem(KEY_IMAGES, JSON.stringify(savedImages));
+                } catch (error) {
+                    alert("¡Límite de memoria alcanzado! El navegador no soporta más imágenes tan pesadas. Prueba borrar algunas cosas o usar imágenes de menor tamaño.");
+                    container.remove();
+                    savedImages[category].pop();
+                    if (savedImages[category].length === 0) {
+                        document.getElementById('empty-' + category).style.display = 'block';
+                    }
+                }
+            }
         }
 
+        // SUBIR IMÁGENES
         fileUpload.addEventListener('change', function(e) {
             const files = e.target.files;
+            const selectedCategory = categorySelector.value;
+            
             if (files.length > 0) {
-                emptyState.style.display = 'none';
+                const emptyState = document.getElementById('empty-' + selectedCategory);
+                if(emptyState) emptyState.style.display = 'none';
+                
                 Array.from(files).forEach(file => {
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = function(evento) {
                             const base64Src = evento.target.result;
-                            renderImage(base64Src);
-                            
-                            // Guardar en LocalStorage con control de errores por si es muy pesada
-                            try {
-                                savedImages.push(base64Src);
-                                localStorage.setItem('mochila_images', JSON.stringify(savedImages));
-                            } catch (error) {
-                                alert("¡Che! La memoria de la mochila se llenó. El navegador no banca imágenes tan pesadas. Probá con fotos más livianas o borrá alguna de la galería.");
-                                savedImages.pop(); // Revertir
-                                galleryGrid.lastChild.remove(); // Quitar la que falló
-                                if (savedImages.length === 0) emptyState.style.display = 'block';
-                            }
+                            renderImage(base64Src, selectedCategory, true);
                         }
                         reader.readAsDataURL(file);
                     }
                 });
             }
-        });
-
-        // LÓGICA DE ROPA Y DRAG & DROP
-        function packItem(itemElement) {
-            if (!itemElement.classList.contains('hidden')) {
-                itemElement.classList.add('hidden');
-                packedItems++;
-                counterText.innerText = packedItems;
-                
-                // Guardar en memoria
-                savedClothes.push(itemElement.id);
-                localStorage.setItem('mochila_clothes', JSON.stringify(savedClothes));
-                
-                backpackImg.style.transform = 'scale(1.1) translateY(10px)';
-                setTimeout(() => { backpackImg.style.transform = ''; }, 200);
-            }
-        }
-
-        clothes.forEach(item => {
-            item.addEventListener('dragstart', (e) => { e.dataTransfer.setData('text/plain', item.id); setTimeout(() => item.style.opacity = '0.5', 0); });
-            item.addEventListener('dragend', () => { item.style.opacity = '1'; });
-        });
-
-        dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('drag-over'); });
-        dropzone.addEventListener('dragleave', () => { dropzone.classList.remove('drag-over'); });
-        dropzone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropzone.classList.remove('drag-over');
-            const id = e.dataTransfer.getData('text/plain');
-            const draggedElement = document.getElementById(id);
-            if (draggedElement) packItem(draggedElement);
-        });
-
-        resetBtn.addEventListener('click', () => {
-            clothes.forEach(item => { item.classList.remove('hidden'); item.style.opacity = '1'; });
-            packedItems = 0;
-            counterText.innerText = packedItems;
             
-            // Vaciar memoria de ropa
-            savedClothes = [];
-            localStorage.setItem('mochila_clothes', JSON.stringify(savedClothes));
-            
-            backpackImg.style.transform = 'rotate(-10deg)';
-            setTimeout(() => {
-                backpackImg.style.transform = 'rotate(10deg)';
-                setTimeout(() => { backpackImg.style.transform = ''; }, 150);
-            }, 150);
+            // Reset input file 
+            this.value = '';
         });
 
-        // Arrancar con la memoria cargada
+        // Arrancar
         initMemory();
     </script>
 </body>
