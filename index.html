@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Cartera Organizada</title>
     <style>
-        /* CSS: Estilos y colores (Modo oscuro Notion #191919) */
         * { box-sizing: border-box; }
 
         body {
@@ -32,29 +31,31 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .header { text-align: center; margin-bottom: 40px; }
+        .header { text-align: center; margin-bottom: 30px; }
         .header h1 { margin: 0 0 5px 0; font-size: 24px; }
         .header p { color: #9ba1a6; margin: 0; font-size: 14px; }
 
-        .main-container { display: flex; justify-content: center; width: 100%; }
+        .main-container { display: flex; flex-direction: column; align-items: center; width: 100%; gap: 15px; }
 
         /* CARTERA */
         .backpack-section { display: flex; flex-direction: column; align-items: center; }
         .backpack-dropzone {
-            width: 350px; height: 450px; display: flex; align-items: center; justify-content: center;
+            width: 320px; height: 400px; display: flex; align-items: center; justify-content: center;
             position: relative; transition: all 0.3s ease; cursor: pointer;
+            background: #1e1e1e; border: 2px dashed #444; border-radius: 20px; overflow: hidden;
         }
-        .backpack-dropzone::after {
-            content: "Abrir cartera"; position: absolute; bottom: 20px; background: rgba(0,0,0,0.7);
-            padding: 8px 15px; border-radius: 20px; font-size: 14px; opacity: 0; transition: opacity 0.3s; pointer-events: none;
-        }
-        .backpack-dropzone:hover::after { opacity: 1; }
+        .backpack-dropzone:hover { border-color: #2eaadc; }
+        
         .backpack-image {
             width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s ease, filter 0.3s ease;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); pointer-events: none;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5)); pointer-events: none; padding: 20px;
         }
         .backpack-dropzone:hover .backpack-image {
-            transform: scale(1.05); filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15));
+            transform: scale(1.03); filter: drop-shadow(0 0 25px rgba(46, 170, 220, 0.2));
+        }
+
+        .backpack-placeholder {
+            text-align: center; color: #888; padding: 20px; font-size: 14px; pointer-events: none;
         }
 
         /* BOTONES */
@@ -75,7 +76,7 @@
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 15px; min-height: 100px; }
         .empty-state { grid-column: 1 / -1; text-align: center; color: #777; padding: 20px; font-size: 14px; border: 2px dashed #333; border-radius: 8px; }
         
-        .gallery-item-container { position: relative; width: 100%; padding-bottom: 100%; /* Aspect ratio 1:1 */ border-radius: 8px; border: 1px solid #444; transition: transform 0.2s; overflow: hidden; background: #111; }
+        .gallery-item-container { position: relative; width: 100%; padding-bottom: 100%; border-radius: 8px; border: 1px solid #444; transition: transform 0.2s; overflow: hidden; background: #111; }
         .gallery-item-container:hover { transform: scale(1.05); border-color: #ff4a4a; z-index: 2;}
         .gallery-item { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         
@@ -92,18 +93,24 @@
     <div id="home-view">
         <div class="header">
             <h1>Mi Cartera</h1>
-            <p><b>Haz clic en la cartera</b> para organizar el interior.</p>
+            <p id="subtitle-instructions"><b>Haz clic en la cartera</b> para abrirla o cambiar su foto.</p>
         </div>
 
         <div class="main-container">
             <div class="backpack-section">
                 <div class="backpack-dropzone" id="dropzone">
-                    <!-- ACÁ ESTÁ LA IMAGEN DE PRUEBA DE WIKIPEDIA -->
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Backpack_icon_2.png/512px-Backpack_icon_2.png" alt="Cartera" class="backpack-image" id="backpack-img">
+                    <img id="backpack-img" class="backpack-image" style="display: none;" alt="Mi Cartera">
+                    <div id="backpack-placeholder" class="backpack-placeholder">
+                        👜 <b>Sube la foto de tu cartera aquí</b><br><span style="font-size: 12px; color: #aaa;">(Haz clic para seleccionarla)</span>
+                    </div>
                 </div>
             </div>
+            <button class="btn" id="btn-change-backpack">🔄 Cambiar foto de la cartera</button>
         </div>
     </div>
+    
+    <!-- Input oculto para subir la cartera -->
+    <input type="file" id="backpack-file-input" accept="image/*">
 
     <!-- ================= VISTA 2: INTERIOR (CATEGORÍAS) ================= -->
     <div id="gallery-view">
@@ -113,7 +120,6 @@
                 <button class="btn" id="btn-back">⬅ Volver afuera</button>
                 
                 <div class="upload-controls">
-                    <!-- ACÁ SE ELIGE LA CATEGORÍA ANTES DE SUBIR -->
                     <select id="category-selector" class="category-select">
                         <option value="billetera">Billetera & Docs</option>
                         <option value="maquillaje">Maquillaje & Aseo</option>
@@ -174,12 +180,9 @@
     </div>
 
     <script>
-        // =========================================================================
-        // ⚙️ CONFIGURACIÓN IMPORTANTE PARA NOTION
-        // =========================================================================
-        const WIDGET_ID = "cartera_organizada_1"; 
+        const WIDGET_ID = "cartera_organizada_real"; 
         const KEY_IMAGES = WIDGET_ID + "_images";
-        // =========================================================================
+        const KEY_BACKPACK = WIDGET_ID + "_backpack";
 
         const homeView = document.getElementById('home-view');
         const galleryView = document.getElementById('gallery-view');
@@ -188,7 +191,55 @@
         const fileUpload = document.getElementById('file-upload');
         const categorySelector = document.getElementById('category-selector');
 
-        // Memoria para imágenes estructurada por categorías
+        const backpackImg = document.getElementById('backpack-img');
+        const backpackPlaceholder = document.getElementById('backpack-placeholder');
+        const backpackFileInput = document.getElementById('backpack-file-input');
+        const btnChangeBackpack = document.getElementById('btn-change-backpack');
+
+        // Cargar imagen de la cartera si ya fue guardada antes
+        const savedBackpack = localStorage.getItem(KEY_BACKPACK);
+        if (savedBackpack) {
+            backpackImg.src = savedBackpack;
+            backpackImg.style.display = 'block';
+            backpackPlaceholder.style.display = 'none';
+        }
+
+        // Subir o cambiar la foto de la cartera
+        backpackFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(evento) {
+                    const base64Data = evento.target.result;
+                    backpackImg.src = base64Data;
+                    backpackImg.style.display = 'block';
+                    backpackPlaceholder.style.display = 'none';
+                    localStorage.setItem(KEY_BACKPACK, base64Data);
+                }
+                reader.readAsDataURL(file);
+            }
+            this.value = '';
+        });
+
+        backpackPlaceholder.addEventListener('click', () => backpackFileInput.click());
+        btnChangeBackpack.addEventListener('click', () => backpackFileInput.click());
+
+        // Clic en la cartera
+        dropzone.addEventListener('click', () => {
+            if (localStorage.getItem(KEY_BACKPACK)) {
+                homeView.style.display = 'none';
+                galleryView.style.display = 'flex';
+            } else {
+                backpackFileInput.click();
+            }
+        });
+
+        btnBack.addEventListener('click', () => { 
+            galleryView.style.display = 'none'; 
+            homeView.style.display = 'flex'; 
+        });
+
+        // Manejo de elementos dentro de la cartera
         let savedImages = JSON.parse(localStorage.getItem(KEY_IMAGES)) || {
             "billetera": [],
             "maquillaje": [],
@@ -196,25 +247,18 @@
             "extras": []
         };
 
-        // INICIALIZAR MEMORIA AL CARGAR
         function initMemory() {
-            // Imágenes por categoría
             for (const category in savedImages) {
                 const imagesArray = savedImages[category];
                 if (imagesArray && imagesArray.length > 0) {
                     const emptyState = document.getElementById('empty-' + category);
                     if(emptyState) emptyState.style.display = 'none';
                     
-                    imagesArray.forEach(src => renderImage(src, category, false)); // false = no volver a guardar
+                    imagesArray.forEach(src => renderImage(src, category, false));
                 }
             }
         }
 
-        // CAMBIAR VISTAS
-        dropzone.addEventListener('click', () => { homeView.style.display = 'none'; galleryView.style.display = 'flex'; });
-        btnBack.addEventListener('click', () => { galleryView.style.display = 'none'; homeView.style.display = 'flex'; });
-
-        // RENDERIZAR IMAGEN EN CATEGORÍA
         function renderImage(srcBase64, category, saveToStorage = true) {
             const grid = document.getElementById('grid-' + category);
             if (!grid) return;
@@ -229,15 +273,11 @@
             
             container.appendChild(imgElement);
             
-            // Función para borrar con doble clic
             imgElement.addEventListener('dblclick', () => {
                 container.remove();
-                
-                // Actualizar memoria de esa categoría
                 savedImages[category] = savedImages[category].filter(src => src !== srcBase64);
                 localStorage.setItem(KEY_IMAGES, JSON.stringify(savedImages));
                 
-                // Volver a mostrar el mensaje de vacío si corresponde
                 if (savedImages[category].length === 0) {
                     document.getElementById('empty-' + category).style.display = 'block';
                 }
@@ -248,11 +288,10 @@
             if (saveToStorage) {
                 try {
                     if (!savedImages[category]) savedImages[category] = [];
-                    
                     savedImages[category].push(srcBase64);
                     localStorage.setItem(KEY_IMAGES, JSON.stringify(savedImages));
                 } catch (error) {
-                    alert("¡Límite de memoria alcanzado! El navegador no soporta más imágenes tan pesadas. Prueba borrar algunas cosas o usar imágenes de menor tamaño.");
+                    alert("¡Límite de memoria alcanzado!");
                     container.remove();
                     savedImages[category].pop();
                     if (savedImages[category].length === 0) {
@@ -262,7 +301,6 @@
             }
         }
 
-        // SUBIR IMÁGENES
         fileUpload.addEventListener('change', function(e) {
             const files = e.target.files;
             const selectedCategory = categorySelector.value;
@@ -275,19 +313,15 @@
                     if (file.type.startsWith('image/')) {
                         const reader = new FileReader();
                         reader.onload = function(evento) {
-                            const base64Src = evento.target.result;
-                            renderImage(base64Src, selectedCategory, true);
+                            renderImage(evento.target.result, selectedCategory, true);
                         }
                         reader.readAsDataURL(file);
                     }
                 });
             }
-            
-            // Reset input file 
             this.value = '';
         });
 
-        // Arrancar
         initMemory();
     </script>
 </body>
